@@ -4,7 +4,8 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from wagtail.core.models import Page
+# from wagtail.core.models import TranslatablePage
+from wagtailtrans.models import TranslatablePage
 from wagtail.admin.edit_handlers import FieldPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.search import index
@@ -20,11 +21,11 @@ Entry = import_model(getattr(settings, 'PUPUT_ENTRY_MODEL', EntryAbstract))
 Blog = import_model(getattr(settings, 'PUPUT_BLOG_MODEL', BlogAbstract))
 
 
-class BlogPage(BlogRoutes, Page, Blog):
+class BlogPage(BlogRoutes, TranslatablePage, Blog):
     extra = BlogManager()
 
-    content_panels = Page.content_panels + getattr(Blog, 'content_panels', [])
-    settings_panels = Page.settings_panels + getattr(Blog, 'settings_panels', [])
+    content_panels = TranslatablePage.content_panels + getattr(Blog, 'content_panels', [])
+    settings_panels = TranslatablePage.settings_panels + getattr(Blog, 'settings_panels', [])
 
     subpage_types = ['puput.EntryPage']
 
@@ -119,20 +120,20 @@ class EntryPageRelated(models.Model):
         return str(self.entrypage_to)
 
 
-class EntryPage(Entry, Page):
+class EntryPage(Entry, TranslatablePage):
     # Search
-    search_fields = Page.search_fields + [
+    search_fields = TranslatablePage.search_fields + [
         index.SearchField('body'),
         index.SearchField('excerpt'),
-        index.FilterField('page_ptr_id')
+        index.FilterField('translatablepage_ptr_id')
     ]
 
     # Panels
     content_panels = getattr(Entry, 'content_panels', [])
 
-    promote_panels = Page.promote_panels + getattr(Entry, 'promote_panels', [])
+    promote_panels = TranslatablePage.promote_panels + getattr(Entry, 'promote_panels', [])
 
-    settings_panels = Page.settings_panels + [
+    settings_panels = TranslatablePage.settings_panels + [
         FieldPanel('date'), FieldPanel('owner'),
     ] + getattr(Entry, 'settings_panels', [])
 
@@ -143,7 +144,7 @@ class EntryPage(Entry, Page):
     def get_sitemap_urls(self, request=None):
         from .urls import get_entry_url
         root_url = self.get_url_parts()[1]
-        entry_url = get_entry_url(self, self.blog_page.page_ptr, root_url)
+        entry_url = get_entry_url(self, self.blog_page.translatablepage_ptr, root_url)
         return [
             {
                 'location': root_url + entry_url,

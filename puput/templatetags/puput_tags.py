@@ -68,7 +68,7 @@ def archives_list(context):
 
 @register.simple_tag(takes_context=True)
 def entry_url(context, entry, blog_page):
-    return get_entry_url(entry, blog_page.page_ptr, Site.find_for_request(context['request']).root_page)
+    return get_entry_url(entry, blog_page.translatablepage_ptr, Site.find_for_request(context['request']).root_page)
 
 
 @register.simple_tag(takes_context=True)
@@ -85,7 +85,7 @@ def image_url(context, url):
 
 @register.simple_tag(takes_context=True)
 def feeds_url(context, blog_page):
-    return get_feeds_url(blog_page.page_ptr, Site.find_for_request(context['request']).root_page)
+    return get_feeds_url(blog_page.translatablepage_ptr, Site.find_for_request(context['request']).root_page)
 
 
 @register.simple_tag(takes_context=True)
